@@ -4,7 +4,7 @@ groovy
 @Library('shared-pipeline@main') _
 
 Map options = [
-    node : 'main',
+    node : 'master',
     credentialId: 'watermelon',
     TEST_PACK_ID: '9024760'
 ]
