@@ -1,0 +1,11 @@
+
+groovy
+@Library('watermelontesting@main')
+@Library('shared-pipeline@main') _
+
+Map options = [
+    node : 'master',
+    credentialId: 'watermelon',
+    TEST_PACK_ID: '9024760'
+]
+executeFunctionalTest(options)
