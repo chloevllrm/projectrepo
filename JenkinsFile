@@ -1,10 +1,50 @@
-groovy
-@Library('watermelontesting@main')
-@Library('shared-pipeline@main') _
+pipeline {
+    agent any
 
-Map options = [
-    node : 'master',
-    credentialId: 'watermelon',
-    TEST_PACK_ID: '9024760'
-]
-executeFunctionalTest(options)
+    environment {
+        AUTH_URL = 'https://wm-sandbox-1.watermelon.us/realms/watermelon/protocol/openid-connect/token'
+    }
+
+    stages {
+
+        stage('Authenticate') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'wm-username', variable: 'WM_USERNAME'),
+                    string(credentialsId: 'wm-password', variable: 'WM_PASSWORD')
+                ]) {
+
+                    powershell '''
+                    $body = @{
+                        client_id = "web_app"
+                        username = "$env:WM_USERNAME"
+                        password = "$env:WM_PASSWORD"
+                        grant_type = "password"
+                    }
+
+                    try{
+                        $response = Invoke-RestMethod `
+                            -Method Post `
+                            -Uri $env:AUTH_URL `
+                            -ContentType "application/x-www-form-urlencoded" `
+                            -Body $body
+
+                        Write-Host "Authentication Successful"
+
+                        if($response.access_token){
+                            Write-Host "Token Received"
+                        }
+                        else{
+                            throw "No access token returned"
+                        }
+                    }
+                    catch{
+                        Write-Error $_
+                        throw
+                    }
+                    '''
+                }
+            }
+        }
+    }
+}
