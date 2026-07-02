@@ -9,10 +9,17 @@ pipeline {
 
         stage('Authenticate') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'watermelon', variable: 'WM_USERNAME'),
-                    string(credentialsId: 'watermelon', variable: 'WM_PASSWORD')
-                ]) {
+                
+withCredentials([
+    usernamePassword(
+        credentialsId: 'watermelon',
+        usernameVariable: 'USERNAME',
+        passwordVariable: 'PASSWORD'
+    )
+]) {
+    echo "Authenticated"
+}
+
 
                     powershell '''
                     $body = @{
