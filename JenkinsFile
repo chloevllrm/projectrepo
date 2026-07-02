@@ -1,4 +1,4 @@
-@Library('wtermelon testing@main')
+@Library('watermelontesting@main')
 @Library('shared-pipeline@main') _
 
 Map options = [
