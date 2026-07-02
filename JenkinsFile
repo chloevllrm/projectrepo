@@ -4,6 +4,6 @@
 Map options = [
     node : 'master',
     credentialId: 'watermelon',
-    TEST_PACK_ID: '<your-test-pack-id-goes-here>'
+    TEST_PACK_ID: '9024760'
 ]
 executeFunctionalTest(options)
