@@ -10,8 +10,8 @@ pipeline {
         stage('Authenticate') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'wm-username', variable: 'WM_USERNAME'),
-                    string(credentialsId: 'wm-password', variable: 'WM_PASSWORD')
+                    string(credentialsId: 'watermelon', variable: 'WM_USERNAME'),
+                    string(credentialsId: 'watermelon', variable: 'WM_PASSWORD')
                 ]) {
 
                     powershell '''
