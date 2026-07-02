@@ -6,30 +6,25 @@ pipeline {
     }
 
     stages {
-
         stage('Authenticate') {
             steps {
-                
-withCredentials([
-    usernamePassword(
-        credentialsId: 'watermelon',
-        usernameVariable: 'USERNAME',
-        passwordVariable: 'PASSWORD'
-    )
-]) {
-    echo "Authenticated"
-}
-
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'watermelon',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'PASSWORD'
+                    )
+                ]) {
 
                     powershell '''
                     $body = @{
                         client_id = "web_app"
-                        username = "$env:WM_USERNAME"
-                        password = "$env:WM_PASSWORD"
+                        username = "$env:USERNAME"
+                        password = "$env:PASSWORD"
                         grant_type = "password"
                     }
 
-                    try{
+                    try {
                         $response = Invoke-RestMethod `
                             -Method Post `
                             -Uri $env:AUTH_URL `
@@ -38,14 +33,14 @@ withCredentials([
 
                         Write-Host "Authentication Successful"
 
-                        if($response.access_token){
+                        if ($response.access_token) {
                             Write-Host "Token Received"
                         }
-                        else{
+                        else {
                             throw "No access token returned"
                         }
                     }
-                    catch{
+                    catch {
                         Write-Error $_
                         throw
                     }
