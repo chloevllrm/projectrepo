@@ -1,52 +1,9 @@
-pipeline {
-    agent any
+@Library('shared-lib@WM-DevOps')
+@Library('shared-pipeline@WM-DevOps') _
 
-    environment {
-        AUTH_URL = 'https://wm-sandbox-1.watermelon.us/realms/watermelon/protocol/openid-connect/token'
-    }
-
-    stages {
-        stage('Authenticate') {
-            steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'watermelon',
-                        usernameVariable: 'USERNAME',
-                        passwordVariable: 'PASSWORD'
-                    )
-                ]) {
-
-                    powershell '''
-                    $body = @{
-                        client_id = "web_app"
-                        username = "$env:USERNAME"
-                        password = "$env:PASSWORD"
-                        grant_type = "password"
-                    }
-
-                    try {
-                        $response = Invoke-RestMethod `
-                            -Method Post `
-                            -Uri $env:AUTH_URL `
-                            -ContentType "application/x-www-form-urlencoded" `
-                            -Body $body
-
-                        Write-Host "Authentication Successful"
-
-                        if ($response.access_token) {
-                            Write-Host "Token Received"
-                        }
-                        else {
-                            throw "No access token returned"
-                        }
-                    }
-                    catch {
-                        Write-Error $_
-                        throw
-                    }
-                    '''
-                }
-            }
-        }
-    }
-}
+Map options = [
+    node : 'master',
+    credentialId: 'watermelon',
+    TEST_PACK_ID: '<your-test-pack-id-goes-here>'
+]
+executeFunctionalTest(options)
