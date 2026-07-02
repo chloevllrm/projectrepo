@@ -1,5 +1,5 @@
-@Library('shared-lib@WM-DevOps')
-@Library('shared-pipeline@WM-DevOps') _
+@Library('wtermelon testing@main')
+@Library('shared-pipeline@main') _
 
 Map options = [
     node : 'master',
