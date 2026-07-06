@@ -17,65 +17,14 @@ pipeline {
 
                     powershell '''
 
+                    # Authenticate
+
                     $tokenResponse = Invoke-RestMethod `
                       -Method POST `
                       -Uri "https://wm-sandbox-auth-1.watermelon.us/realms/watermelon/protocol/openid-connect/token" `
                       -ContentType "application/x-www-form-urlencoded" `
                       -Body @{
-                        client_id="web_app"
-                        username=$env:WM_USERNAME
-                        password=$env:WM_PASSWORD
-                        grant_type="password"
-                      }
-
-                    $token = $tokenResponse.access_token
-
-                    $body = @{
-                        packId = 9024760
-                        runNow = $true
-                        environmentId = 8890901
-                        buildId = 8902051
-                        iteration = 1
-                        headlessExecution = $false
-                        webAutId = 9049052
-                    } | ConvertTo-Json
-
-                    $response = Invoke-RestMethod `
-                      -Method PUT `
-                      -Uri "https://wm-sandbox-1.watermelon.us/services/wmuitestcontroller/api/test-packs/execute_v2" `
-                      -Headers @{
-                         Authorization = "Bearer $token"
-                      } `
-                      -ContentType "application/json" `
-                      -Body $body
-
-                    Write-Host "==== RESPONSE ===="
-                    $response | ConvertTo-Json -Depth 50
-
-                    $runId = $response.id
-
-                    Write-Host "RUN ID: $runId"
-
-                    Set-Content runid.txt $runId
-
-                    '''
-                }
-            }
-        }
-
-        stage('Monitor Execution') {
-
-            steps {
-
-                powershell '''
-
-                $runId = Get-Content runid.txt
-
-                Write-Host "Monitoring Run ID: $runId"
-
-                '''
-            }
-        }
-    }
-}
-
+                        client_id = "web_app"
+                        username = $env:WM_USERNAME
+                        password = $env:WM_PASSWORD
+                        grant_type = "password"
