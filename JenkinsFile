@@ -1,31 +1,9 @@
-pipeline {
-    agent any
+@Library('shared-pipeline@main') _
 
-    stages {
-
-        stage('Execute Watermelon Test Pack') {
-            steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'watermelon',
-                        usernameVariable: 'WM_USERNAME',
-                        passwordVariable: 'WM_PASSWORD'
-                    )
-                ]) {
-                    powershell '''
-                    Write-Host "TEST"
-                    '''
-                }
-            }
-        }
-
-        stage('Monitor Execution') {
-            steps {
-                powershell '''
-                Write-Host "MONITOR"
-                '''
-            }
-        }
-
-    }
-}
+executeFunctionalTest(
+    credentialId: 'watermelon',
+    packId: 9024760,
+    environmentId: 8890901,
+    buildId: 8902051,
+    webAutId: 9049052
+)
