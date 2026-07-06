@@ -4,9 +4,7 @@ pipeline {
     stages {
 
         stage('Get Watermelon Token') {
-
             steps {
-
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'watermelon',
@@ -14,7 +12,6 @@ pipeline {
                         passwordVariable: 'WM_PASSWORD'
                     )
                 ]) {
-
                     powershell '''
                     $body = @{
                         client_id="web_app"
@@ -37,4 +34,3 @@ pipeline {
         }
     }
 }
-``
