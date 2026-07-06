@@ -1,36 +1,51 @@
-pipeline {
-    agent any
+stage('Call Watermelon API') {
+    steps {
 
-    stages {
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'watermelon',
+                usernameVariable: 'WM_USERNAME',
+                passwordVariable: 'WM_PASSWORD'
+            )
+        ]) {
 
-        stage('Get Watermelon Token') {
-            steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'watermelon',
-                        usernameVariable: 'WM_USERNAME',
-                        passwordVariable: 'WM_PASSWORD'
-                    )
-                ]) {
-                    powershell '''
-                    $body = @{
-                        client_id="web_app"
-                        username=$env:WM_USERNAME
-                        password=$env:WM_PASSWORD
-                        grant_type="password"
-                    }
+            powershell '''
+            $body = @{
+                client_id="web_app"
+                username=$env:WM_USERNAME
+                password=$env:WM_PASSWORD
+                grant_type="password"
+            }
 
-                    $response = Invoke-RestMethod `
-                      -Method POST `
-                      -Uri "https://wm-sandbox-auth-1.watermelon.us/realms/watermelon/protocol/openid-connect/token" `
-                      -ContentType "application/x-www-form-urlencoded" `
-                      -Body $body
+            $tokenResponse = Invoke-RestMethod `
+              -Method POST `
+              -Uri "https://wm-sandbox-auth-1.watermelon.us/realms/watermelon/protocol/openid-connect/token" `
+              -ContentType "application/x-www-form-urlencoded" `
+              -Body $body
 
-                    Write-Host "TOKEN RECEIVED"
-                    Write-Host $response.access_token.Substring(0,20)
-                    '''
+            $token = $tokenResponse.access_token
+
+            try {
+
+                $response = Invoke-WebRequest `
+                  -Method GET `
+                  -Uri "https://wm-sandbox-1.watermelon.us/services/wmuitestcontroller/api" `
+                  -Headers @{
+                    Authorization = "Bearer $token"
+                  }
+
+                Write-Host "STATUS:" $response.StatusCode
+                Write-Host $response.Content
+
+            }
+            catch {
+                Write-Host $_.Exception.Message
+
+                if ($_.Exception.Response) {
+                    Write-Host "STATUS:" $_.Exception.Response.StatusCode.value__
                 }
             }
+            '''
         }
     }
 }
