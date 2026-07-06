@@ -41,7 +41,7 @@ pipeline {
                     } | ConvertTo-Json
 
                     $response = Invoke-RestMethod `
-                      -Method POST `
+                      -Method PUT `
                       -Uri "https://wm-sandbox-1.watermelon.us/services/wmuitestcontroller/api/test-packs/execute_v2" `
                       -Headers @{
                         Authorization = "Bearer $token"
