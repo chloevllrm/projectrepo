@@ -40,3 +40,42 @@ pipeline {
                         webAutId = 9049052
                     } | ConvertTo-Json
 
+                    $response = Invoke-RestMethod `
+                      -Method PUT `
+                      -Uri "https://wm-sandbox-1.watermelon.us/services/wmuitestcontroller/api/test-packs/execute_v2" `
+                      -Headers @{
+                         Authorization = "Bearer $token"
+                      } `
+                      -ContentType "application/json" `
+                      -Body $body
+
+                    Write-Host "==== RESPONSE ===="
+                    $response | ConvertTo-Json -Depth 50
+
+                    $runId = $response.id
+
+                    Write-Host "RUN ID: $runId"
+
+                    Set-Content runid.txt $runId
+
+                    '''
+                }
+            }
+        }
+
+        stage('Monitor Execution') {
+
+            steps {
+
+                powershell '''
+
+                $runId = Get-Content runid.txt
+
+                Write-Host "Monitoring Run ID: $runId"
+
+                '''
+            }
+        }
+    }
+}
+
