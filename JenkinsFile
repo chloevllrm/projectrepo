@@ -4,9 +4,7 @@ pipeline {
     stages {
 
         stage('Execute Watermelon Test Pack') {
-
             steps {
-
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'watermelon',
@@ -14,17 +12,20 @@ pipeline {
                         passwordVariable: 'WM_PASSWORD'
                     )
                 ]) {
-
                     powershell '''
+                    Write-Host "TEST"
+                    '''
+                }
+            }
+        }
 
-                    # Authenticate
+        stage('Monitor Execution') {
+            steps {
+                powershell '''
+                Write-Host "MONITOR"
+                '''
+            }
+        }
 
-                    $tokenResponse = Invoke-RestMethod `
-                      -Method POST `
-                      -Uri "https://wm-sandbox-auth-1.watermelon.us/realms/watermelon/protocol/openid-connect/token" `
-                      -ContentType "application/x-www-form-urlencoded" `
-                      -Body @{
-                        client_id = "web_app"
-                        username = $env:WM_USERNAME
-                        password = $env:WM_PASSWORD
-                        grant_type = "password"
+    }
+}
