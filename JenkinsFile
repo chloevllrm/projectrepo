@@ -40,17 +40,19 @@ pipeline {
                         webAutId = 9049052
                     } | ConvertTo-Json
 
+                    $response | ConvertTo-Json -Depth 20
+
                     $response = Invoke-RestMethod `
                       -Method PUT `
                       -Uri "https://wm-sandbox-1.watermelon.us/services/wmuitestcontroller/api/test-packs/execute_v2" `
                       -Headers @{
-                        Authorization = "Bearer $token"
-                      } `
-                      -ContentType "application/json" `
-                      -Body $body
+                         Authorization = "Bearer $token"
+                     } `
+                     -ContentType "application/json" `
+                     -Body $body
 
-                    Write-Host "EXECUTION RESPONSE:"
-                    $response | ConvertTo-Json -Depth 20
+                    Write-Host "==== RESPONSE ===="
+                    $response | ConvertTo-Json -Depth 50
 
                     '''
                 }
