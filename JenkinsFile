@@ -1,9 +1,42 @@
-@Library('shared-pipeline@main') _
+pipeline {
 
-executeFunctionalTest(
-    credentialId: 'watermelon',
-    packId: 9024760,
-    environmentId: 8890901,
-    buildId: 8902051,
-    webAutId: 9049052
-)
+    agent any
+
+    stages {
+
+        stage('Trigger GitHub Workflow') {
+
+            steps {
+
+                withCredentials([
+                    string(
+                        credentialsId: 'github-token',
+                        variable: 'GITHUB_TOKEN'
+                    )
+                ]) {
+
+                    powershell '''
+
+                    $headers = @{
+                        Authorization = "Bearer $env:GITHUB_TOKEN"
+                        Accept = "application/vnd.github+json"
+                    }
+
+                    $body = @{
+                        ref = "main"
+                    } | ConvertTo-Json
+
+                    Invoke-RestMethod `
+                        -Method POST `
+                        -Uri "https://api.github.com/repos/chloevllrm/projectrepo/actions/workflows/watermelon.yml/dispatches" `
+                        -Headers $headers `
+                        -Body $body
+
+                    Write-Host "GitHub Workflow Triggered"
+
+                    '''
+                }
+            }
+        }
+    }
+}
